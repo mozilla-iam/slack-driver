@@ -1,0 +1,5 @@
+credstash
+everett
+prompt_toolkit
+watchtower
+slackclient

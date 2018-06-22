@@ -1,0 +1,8 @@
+{
+  "name": "slack-driver",
+  "version": "0.0.1",
+  "dependencies": {
+    "serverless": "^1.27.3",
+    "serverless-python-requirements": "4.0.4"
+  }
+}
