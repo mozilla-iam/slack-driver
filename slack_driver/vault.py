@@ -51,6 +51,21 @@ class People(object):
         self.table = CISTable(self.table_name)
         self.master_grouplist = []
 
+    def people_in_group(self, groups, filter_prefix=None):
+        """Returns a list of dicts for each user that matches a group from the list"""
+        matched_group_list = self.grouplist(filter_prefix)
+        found_user = []
+        for user in matched_group_list:
+            for user_glist in user.get('groups'):
+                if user_glist in groups:
+                    found_users.append(user)
+                    break
+
+        logger.debug('Returning total of : {} users for this run of the connector.'.format(
+            len(found_users))
+        )
+        return found_users
+
     def grouplist(self, filter_prefix=None):
         """Returns a list of dicts of for each group id, email"""
         self.master_grouplist = self._extract_groups(filter_prefix)

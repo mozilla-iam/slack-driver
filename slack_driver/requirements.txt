@@ -3,3 +3,5 @@ everett
 prompt_toolkit
 watchtower
 slackclient
+pyaml
+requests

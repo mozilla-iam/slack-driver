@@ -2,9 +2,7 @@ from everett.manager import ConfigManager
 from everett.manager import ConfigOSEnv
 
 """
-:mod:`slack-driver.settings` -- GSuite Driver Configuration
-* Environment variables used
-* SLACK_DRIVER_PREFIX
+:mod:`slack-driver.settings` -- Slack Driver Configuration
 """
 
 

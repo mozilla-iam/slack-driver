@@ -2,5 +2,6 @@ CIS_DYNAMODB_PERSON_TABLE: CISStaging-VaultandStreams-IdentityVaultUsers-O35P6M8
 CIS_LOGGING_OUTPUT: cloudwatch
 CIS_LOGGING_LEVEL: DEBUG
 CIS_CLOUDWATCH_LOG_GROUP: staging
-SLACK_DRIVER_PREFIX: mozilliansorg
 SLACK_DRIVER_ENVIRONMENT: development
+SLACK_DRIVER_APPSYML: https://cdn.sso.mozilla.com/apps.yml
+SLACK_DRIVER_SLACK_APP: Slack
