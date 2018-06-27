@@ -1,4 +1,5 @@
-REGION	:= us-west-2
+REGION		:= us-west-2
+SLS_DEBUG	:= *
 
 all:
 	@echo 'Available make targets:'
@@ -8,11 +9,11 @@ install-sls:
 	npm install
 
 deploy-dev:
-	SLS_DEBUG=* STAGE=dev ./node_modules/.bin/sls deploy --region $(REGION) --stage dev
+	SLS_DEBUG=$(SLS_DEBUG) STAGE=dev ./node_modules/.bin/sls deploy --region $(REGION) --stage dev
 
 remove-deploy-dev:
 	echo "Warning: removing deployement"
-	SLS_DEBUG=* STAGE=dev ./node_modules/.bin/sls remove --region $(REGION) --stage dev
+	SLS_DEBUG=$(SLS_DEBUG) STAGE=dev ./node_modules/.bin/sls remove --region $(REGION) --stage dev
 
 python-venv:
 	$(shell [ -d venv ] || python3 -m venv venv)

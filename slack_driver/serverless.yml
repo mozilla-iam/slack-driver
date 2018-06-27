@@ -72,7 +72,7 @@ provider:
 functions:
   slack-driver:
     handler: main.handle
-    timeout: 300
+    timeout: 60
     environment: ${file(${self:custom.stage}-vars.yml)}
     events:
       - schedule:
