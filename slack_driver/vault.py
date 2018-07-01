@@ -1,5 +1,6 @@
 import boto3
 import logging
+import utils
 
 from boto3.dynamodb.conditions import Attr
 
@@ -8,8 +9,15 @@ try:
 except ImportError:
     from slack_driver.settings import get_config
 
-logger = logging.getLogger(__name__)
+config = get_config()
+custom_logger = utils.CISLogger(
+    name=__name__,
+    level=config('logging_level', namespace='cis', default='INFO'),
+    cis_logging_output=config('logging_output', namespace='cis', default='cloudwatch'),
+    cis_cloudwatch_log_group=config('cloudwatch_log_group', namespace='cis', default='staging')
+).logger()
 
+logger = custom_logger.get_logger()
 
 class CISTable(object):
     def __init__(self, table_name):
@@ -54,7 +62,6 @@ class People(object):
         """Returns a list of dicts for each user that matches a group from the list"""
         found_users = []
         for user in self.table.all:
-            logger.debug('processing user {}'.format(user))
             for user_glist in user.get('groups', []):
                 if user_glist in groups:
                     found_users.append(user)
