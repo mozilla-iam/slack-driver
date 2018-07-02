@@ -26,6 +26,16 @@ You only need to do this once.
 credstash -r us-west-2 put -a slack-driver.token @slack-driver-api-key.txt app=slack-driver
 ```
 
+To obtain the token, see <https://api.slack.com/scim> - TLDR:
+
+1. Create an app at <https://api.slack.com/apps/new>
+2. Click "set permissions" and add scope `admin`
+3. Click "install app to workspace" and authorize at the prompt
+4. Copy the "oauth access token" and keep it safe. That is your token for this program.
+
+
+Note that you may restrict which IP ranges can call the API with this token in Slack's app settings as well.
+
 ### Deploy new code
 
 ```
