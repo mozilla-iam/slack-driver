@@ -59,12 +59,12 @@ class People(object):
         self.table = CISTable(self.table_name)
 
     def people_in_group(self, groups):
-        """Returns a list of dicts for each user that matches a group from the list"""
-        found_users = []
+        """Returns a dict of dicts for each user that matches a group from the list"""
+        found_users = {}
         for user in self.table.all:
             for user_glist in user.get('groups', []):
                 if user_glist in groups:
-                    found_users.append(user)
+                    found_users[user.get('primaryEmail')] = user
                     break
 
         logger.debug('Returning total of : {} users for this run of the connector.'.format(
