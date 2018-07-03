@@ -87,14 +87,29 @@ def verify_slack_users(config, allowed_users):
 
         users[user_email] = user.get('id')
 
-    logger.debug('allowed_users: {}'.format(allowed_users.keys()))
-    logger.debug('users: {}'.format(users.keys()))
     users_to_disable = set(users.keys()) - set(allowed_users.keys())
     logger.debug('Will disable {} user(s) which should no longer have access to Slack'.format(len(users_to_disable)))
 
+    failure = 0
     for u in users_to_disable:
         logger.debug('Will now disable user {} ({})'.format(u, users[u]))
-        #sc.deactivate_user(users[u])
+        # sample return msg:
+        # {"schemas": ["urn:scim:schemas:core:1.0"], "id": "UB0GWPDCM", "externalId": "", "meta": {"created": "2018-06-01T16:10:18-07:00", "location": "https://api.slack.com/scim/v1/Users/UB0GWPDCM"}, "userName": "kang_slack", "nickName": "kang_slack", "name": {"givenName": "", "familyName": ""}, "displayName": "", "profileUrl": "https://mozilla-sandbox-scim.slack.com/team/kang_slack", "title": "", "timezone": "America/Los_Angeles", "active": false, "emails": [{"value": "kang+slack@mozilla.com", "primary": true}], "photos": [{"value": "https://secure.gravatar.com/avatar/8363a16c1147ee60fff6be4c8b30aaa1.jpg?s=192&d=https%3A%2F%2Fcfr.slack-edge.com%2F7fa9%2Fimg%2Favatars%2Fava_0009-192.png", "type": "photo"}], "groups": []}
+
+        try:
+            ret = sc.deactivate_user(users[u])
+            if (ret.get('active') is not False):
+                logger.warning('Failed to disable user {}'.format(users[u]))
+                failure = failure + 1
+        except Exception as e:
+            # This can happen if the user is unmodifiable, for example if its a space owner
+            logger.warning('Could not disable user {}, an exception occured: {}'.format(users[u], e))
+            failure = failure + 1
+
+    if failure != 0:
+        logger.warning('{} failure(s) occured'.format(failure))
+        return False
+
     return True
 
 def handle(event=None, context={}):
@@ -143,4 +158,4 @@ def handle(event=None, context={}):
 
     logger.debug('Disable Slack users.')
     if not verify_slack_users(config, allowed_users):
-        logger.warning('Failed to verify slack users will not deprovision users')
+        logger.warning('Failed to verify slack users - some users may not have been deprovisioned')

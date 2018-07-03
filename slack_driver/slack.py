@@ -33,7 +33,7 @@ class SlackAPI(object):
         response = self.conn.getresponse()
 
         if (response.status >= 300) or (response.status < 200):
-            raise Exception('HTTPCommunicationFailed', (response.status, response.reason))
+            raise Exception('HTTPCommunicationFailed', (response.status, response.reason, rpath, payload_json))
 
         ret = json.loads(response.read().decode('utf-8'))
         return ret
