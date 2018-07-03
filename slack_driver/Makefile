@@ -8,6 +8,13 @@ all:
 install-sls:
 	npm install
 
+deploy-prod:
+	SLS_DEBUG=$(SLS_DEBUG) STAGE=prod ./node_modules/.bin/sls deploy --region $(REGION) --stage prod
+
+remove-deploy-prod:
+	echo "Warning: removing deployement"
+	SLS_DEBUG=$(SLS_DEBUG) STAGE=prod ./node_modules/.bin/sls remove --region $(REGION) --stage prod
+
 deploy-dev:
 	SLS_DEBUG=$(SLS_DEBUG) STAGE=dev ./node_modules/.bin/sls deploy --region $(REGION) --stage dev
 

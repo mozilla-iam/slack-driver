@@ -36,15 +36,15 @@ To obtain the token, see <https://api.slack.com/scim> - TLDR:
 
 Note that you may restrict which IP ranges can call the API with this token in Slack's app settings as well.
 
-### Deploy new code
+### Deploy, test, etc
 
-```
-docker run --rm -ti \
--v ~/.aws:/root/.aws -v `pwd`:/workspace \
-mozillaiam/docker-sls:latest /bin/bash
+1. `cd slack_driver`
+2. `make` for a list of targets, ex:
 
-npm i -g serverless
-npm i -g serverless-python-requirements
+- `make install-sls` if you don't have the serverless framework installed
+- `make python-venv` if you don't have your own virtual environment scripts
 
-sls deploy --stage dev --region us-west-2
-```
+- `make tests` runs all tests
+- `make deploy-dev` deploys the code in the dev environment
+- 'make remove-deploy-dev' deletes the dev deployment
+- `make deploy-prod` deploys the code in the prod environment
