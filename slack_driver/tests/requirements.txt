@@ -1,0 +1,8 @@
+credstash
+faker
+everett
+prompt_toolkit
+watchtower
+pyaml
+requests
+boto3

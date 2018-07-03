@@ -19,3 +19,13 @@ python-venv:
 	$(shell [ -d venv ] || python3 -m venv venv)
 	echo "# Run this in your shell to activate:"
 	echo "source venv/bin/activate"
+
+tests:
+	python -m unittest discover tests
+
+clean:
+	rm -rf node_modules
+	rm -rf venv
+	rm -rf __pycache__
+
+.PHONY: tests all
