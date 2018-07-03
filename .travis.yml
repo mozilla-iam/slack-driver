@@ -9,11 +9,8 @@ before_install:
   - pip install boto3
   - pip install flake8
   - pip install faker
-  - flake8 slack_driver
-  - flake8 tests
-  - npm install -g dynalite
 install:
   - pip install -r slack_driver/requirements.txt
-  - scripts/start-dynamo-local.sh
+  - pip install -r slack_driver/tests/requirements.txt
 script:
-  - python3 -m unittest discover tests
+  - cd slack_driver && make tests

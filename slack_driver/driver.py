@@ -1,5 +1,4 @@
 import credstash
-import json
 import os
 import utils
 import requests
@@ -9,7 +8,8 @@ import yaml
 from settings import get_config
 from vault import People
 
-def setup_logging():
+
+def setup_logging(config):
     global logger
     custom_logger = utils.CISLogger(
         name=__name__,
@@ -20,6 +20,7 @@ def setup_logging():
 
     logger = custom_logger.get_logger()
 
+
 def get_access_rules(appsyml):
     """
     Fetch access rules
@@ -28,10 +29,10 @@ def get_access_rules(appsyml):
     """
     ## Sample appsyml return value format:
     ## { 'apps': [
-    ##            {'application': {'name': 'Account Portal', 'op': 'auth0', 'url': 'https://login.mozilla.com/', 'logo':
-    ##            'accountmanager.png', 'authorized_users': [], 'authorized_groups': ['team_moco', 'team_mofo'],
-    ##            'display': True, ## 'vanity_url': ['/accountmanager']}}
-    ##           ]
+    ##          {'application': {'name': 'Account Portal', 'op': 'auth0', 'url': 'https://login.mozilla.com/', 'logo':
+    ##          'accountmanager.png', 'authorized_users': [], 'authorized_groups': ['team_moco', 'team_mofo'],
+    ##          'display': True, ## 'vanity_url': ['/accountmanager']}}
+    ##         ]
     ## }
     logger.debug('Fetching access rules.')
     r = requests.get(appsyml)
@@ -42,6 +43,7 @@ def get_access_rules(appsyml):
     access_rules = yaml.load(r.text).get('apps')
     logger.debug('Received apps.yml size {}'.format(len(r.text)))
     return access_rules
+
 
 def get_secret(secret_name, context):
     """Fetch secret from environment or credstash."""
@@ -54,6 +56,7 @@ def get_secret(secret_name, context):
             region="us-west-2"
         )
     return secret
+
 
 def verify_slack_users(allowed_users):
     """
@@ -99,7 +102,14 @@ def verify_slack_users(allowed_users):
     for u in users_to_disable:
         logger.debug('Will now disable user {} ({})'.format(u, users[u]))
         # sample return msg:
-        # {"schemas": ["urn:scim:schemas:core:1.0"], "id": "UB0GWPDCM", "externalId": "", "meta": {"created": "2018-06-01T16:10:18-07:00", "location": "https://api.slack.com/scim/v1/Users/UB0GWPDCM"}, "userName": "kang_slack", "nickName": "kang_slack", "name": {"givenName": "", "familyName": ""}, "displayName": "", "profileUrl": "https://mozilla-sandbox-scim.slack.com/team/kang_slack", "title": "", "timezone": "America/Los_Angeles", "active": false, "emails": [{"value": "kang+slack@mozilla.com", "primary": true}], "photos": [{"value": "https://secure.gravatar.com/avatar/8363a16c1147ee60fff6be4c8b30aaa1.jpg?s=192&d=https%3A%2F%2Fcfr.slack-edge.com%2F7fa9%2Fimg%2Favatars%2Fava_0009-192.png", "type": "photo"}], "groups": []}
+        # {"schemas": ["urn:scim:schemas:core:1.0"], "id": "UB0GWPDCM", "externalId": "", "meta": {"created":
+        # "2018-06-01T16:10:18-07:00", "location": "https://api.slack.com/scim/v1/Users/UB0GWPDCM"}, "userName":
+        # "kang_slack", "nickName": "kang_slack", "name": {"givenName": "", "familyName": ""}, "displayName": "",
+        # "profileUrl": "https://mozilla-sandbox-scim.slack.com/team/kang_slack", "title": "", "timezone":
+        # "America/Los_Angeles", "active": false, "emails": [{"value": "kang+slack@mozilla.com", "primary": true}],
+        # "photos": [{"value":
+        # "https://example.net/test.png",
+        # "type": "photo"}], "groups": []}
 
         try:
             ret = sc.deactivate_user(users[u])
@@ -117,16 +127,12 @@ def verify_slack_users(allowed_users):
 
     return True
 
+
 def handle(event=None, context={}):
-    setup_logging()
+    config = get_config()
+    setup_logging(config)
     logger.info('Initializing Slack driver.')
 
-    logger.debug('Getting configuration from environment.')
-    config = get_config()
-
-    filter_prefix = config('prefix', namespace='slack_driver', default='')
-    driver_mode = config('interactive', namespace='slack_driver', default='True')
-    environment = config('environment', namespace='slack_driver', default='development')
     appsyml = config('appsyml', namespace='slack_driver', default='https://cdn.sso.mozilla.com/apps.yml')
     slack_app = config('slack_app', namespace='slack_driver', default='Slack')
 
@@ -142,15 +148,15 @@ def handle(event=None, context={}):
             known_idp_prefix = ['mozilliansorg', 'hris', 'ldap']
             for g in actual_app.get('authorized_groups'):
                 if g.split('_')[0] not in known_idp_prefix:
-                    #its an ldap group
-                    authorized_groups.append("ldap_"+g)
+                    # its an ldap group
+                    authorized_groups.append("ldap_" + g)
                 else:
                     authorized_groups.append(g)
 
             logger.debug('Valid and authorized users are in groups {}'.format(authorized_groups))
             break
 
-    if app == None:
+    if app is None:
         logger.warning('Did not find {} in access rules, will not deprovision users'.format(slack_app))
         return
 

@@ -1,5 +1,5 @@
 credstash
-faker
+flake8
 everett
 prompt_toolkit
 watchtower

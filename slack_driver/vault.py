@@ -1,5 +1,4 @@
 import boto3
-import logging
 import utils
 
 from boto3.dynamodb.conditions import Attr
@@ -8,6 +7,7 @@ try:
     from settings import get_config
 except ImportError:
     from slack_driver.settings import get_config
+
 
 def setup_logging():
     global logger
@@ -20,6 +20,7 @@ def setup_logging():
     ).logger()
 
     logger = custom_logger.get_logger()
+
 
 class CISTable(object):
     def __init__(self, table_name):
@@ -38,9 +39,7 @@ class CISTable(object):
         if self.table is None:
             self.connect()
 
-        response = self.table.scan(
-                FilterExpression=Attr('active').eq(True)
-            )
+        response = self.table.scan(FilterExpression=Attr('active').eq(True))
 
         users = response.get('Items')
 

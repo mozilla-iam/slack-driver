@@ -12,14 +12,12 @@
 
 import http.client
 import json
-import time
+
 
 class SlackAPI(object):
     def __init__(self, token, uri="api.slack.com"):
-        self.headers = {
-                'content-type': "application/json",
-                'Authorization': "Bearer {}".format(token)
-        }
+        self.headers = {'content-type': "application/json",
+                        'Authorization': "Bearer {}".format(token)}
         self.conn = http.client.HTTPSConnection(uri)
 
     def __del__(self):
@@ -42,7 +40,6 @@ class SlackAPI(object):
         """
         Returns all results from a paginated request
         """
-        count = 0
         results = []
 
         res = self._depaginate(self._request(rtype, rpath, payload_json))
@@ -58,7 +55,7 @@ class SlackAPI(object):
         the request
         """
         # note that slack index starts at 1 instead of 0, so we fix that
-        index = response.get('startIndex')-1
+        index = response.get('startIndex') - 1
         totals = response.get('totalResults')
         per_page = response.get('itemsPerPage')
         results = response.get('Resources')
@@ -66,7 +63,7 @@ class SlackAPI(object):
 
         # is there more pages left than total pages?
         # otherwise we're done
-        if index+per_page >= totals:
+        if index + per_page >= totals:
             ret['done'] = True
 
         return ret
@@ -78,7 +75,14 @@ class SlackAPI(object):
         and https://api.slack.com/scim#filter for the scim_filter syntax
 
         Returns list, similar to:
-        [{'schemas': ['urn:scim:schemas:core:1.0'], 'id': 'UB0GWPDCM', 'externalId': '', 'meta': {'created': '2018-06-01T16:10:18-07:00', 'location': 'https://api.slack.com/scim/v1/Users/UB0GWPDCM'}, 'userName': 'kang_slack', 'nickName': 'kang_slack', 'name': {'givenName': '', 'familyName': ''}, 'displayName': '', 'profileUrl': 'https://mozilla-sandbox-scim.slack.com/team/kang_slack', 'title': '', 'timezone': 'America/Los_Angeles', 'active': False, 'emails': [{'value': 'kang+slack@mozilla.com', 'primary': True}], 'photos': [{'value': 'https://secure.gravatar.com/avatar/8363a16c1147ee60fff6be4c8b30aaa1.jpg?s=192&d=https%3A%2F%2Fcfr.slack-edge.com%2F7fa9%2Fimg%2Favatars%2Fava_0009-192.png', 'type': 'photo'}], 'groups': []}]
+        [{'schemas': ['urn:scim:schemas:core:1.0'], 'id': 'UB0GWPDCM', 'externalId': '', 'meta': {'created':
+        '2018-06-01T16:10:18-07:00', 'location': 'https://api.slack.com/scim/v1/Users/UB0GWPDCM'}, 'userName':
+        'kang_slack', 'nickName': 'kang_slack', 'name': {'givenName': '', 'familyName': ''}, 'displayName': '',
+        'profileUrl': 'https://mozilla-sandbox-scim.slack.com/team/kang_slack', 'title': '', 'timezone':
+        'America/Los_Angeles', 'active': False, 'emails': [{'value': 'kang+slack@mozilla.com', 'primary': True}],
+        'photos': [{'value':
+        'https://example.net/test.png',
+        'type': 'photo'}], 'groups': []}]
 
         """
         return self._depaginated_request("GET", "/scim/v1/Users?filter={}".format(scim_filter))

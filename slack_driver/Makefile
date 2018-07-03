@@ -28,6 +28,8 @@ python-venv:
 	echo "source venv/bin/activate"
 
 tests:
+	flake8 *.py
+	flake8 tests
 	python -m unittest discover tests
 
 clean:
