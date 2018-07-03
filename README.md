@@ -46,5 +46,5 @@ Note that you may restrict which IP ranges can call the API with this token in S
 
 - `make tests` runs all tests
 - `make deploy-dev` deploys the code in the dev environment
-- 'make remove-deploy-dev' deletes the dev deployment
+- `make remove-deploy-dev` deletes the dev deployment
 - `make deploy-prod` deploys the code in the prod environment

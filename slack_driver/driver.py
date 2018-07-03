@@ -73,12 +73,8 @@ def verify_slack_users(allowed_users):
     logger.debug('Found {} Slack users in Slack database'.format(len(slack_user_list)))
 
     users = {}
+    users_already_deactivated = {}
     for user in slack_user_list:
-        # Is user already deactivated?
-        if user.get('active') is False:
-            logger.debug('User {} is already deactivated'.format(user.get('id')))
-            continue
-
         # Find primary email from the list of user's email
         user_email = None
         for e in user.get('emails'):
@@ -93,12 +89,30 @@ def verify_slack_users(allowed_users):
             logger.warning('No slack primary email set for user {}, '
                            'selecting first email in list {}'.format(e.get('id'), user_email))
 
-        users[user_email] = user.get('id')
+        if user.get('active'):
+            users[user_email] = user.get('id')
+        else:
+            users_already_deactivated[user_email] = user.get('id')
+
+    failure = 0
+    users_to_enable = set(users_already_deactivated.keys()) & set(allowed_users.keys())
+    logger.debug('Will re-enabled {} user(s) which were deactivated, '
+                 'but got access to Slack again'.format(len(users_to_enable)))
+
+    for u in users_to_enable:
+        logger.debug('Will now enable {} ({})'.format(u, users_already_deactivated[u]))
+        try:
+            ret = sc.activate_user(users_already_deactivated[u])
+            if (ret.get('active') is not True):
+                logger.warning('Failed to enable user {}'.format(users_already_deactivated[u]))
+                failure = failure + 1
+        except Exception as e:
+            logger.warning('Could not enable user {}, exception: {}'.format(users_already_deactivated[u], e))
+            failure = failure + 1
 
     users_to_disable = set(users.keys()) - set(allowed_users.keys())
     logger.debug('Will disable {} user(s) which should no longer have access to Slack'.format(len(users_to_disable)))
 
-    failure = 0
     for u in users_to_disable:
         logger.debug('Will now disable user {} ({})'.format(u, users[u]))
         # sample return msg:
@@ -118,7 +132,7 @@ def verify_slack_users(allowed_users):
                 failure = failure + 1
         except Exception as e:
             # This can happen if the user is unmodifiable, for example if its a space owner
-            logger.warning('Could not disable user {}, an exception occured: {}'.format(users[u], e))
+            logger.warning('Could not disable user {}, exception: {}'.format(users[u], e))
             failure = failure + 1
 
     if failure != 0:

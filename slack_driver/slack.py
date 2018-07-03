@@ -87,6 +87,11 @@ class SlackAPI(object):
         """
         return self._depaginated_request("GET", "/scim/v1/Users?filter={}".format(scim_filter))
 
+    def activate_user(self, slack_user_id):
+        payload = {'active': True}
+        payload_json = json.dumps(payload)
+        return self._request("PATCH", "/scim/v1/Users/{}".format(slack_user_id), payload_json)
+
     def deactivate_user(self, slack_user_id):
         """
         See also https://api.slack.com/scim#users
