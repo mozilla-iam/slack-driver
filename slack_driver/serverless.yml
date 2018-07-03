@@ -71,7 +71,7 @@ provider:
         - "arn:aws:logs:*:*:log-group:/cis/**"
 functions:
   slack-driver:
-    handler: main.handle
+    handler: driver.handle
     timeout: 300
     environment: ${file(${self:custom.stage}-vars.yml)}
     events:
