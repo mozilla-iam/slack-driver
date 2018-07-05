@@ -4,13 +4,8 @@ notifications:
   email: false
 python:
   - 3.6
-before_install:
-  - pip install boto
-  - pip install boto3
-  - pip install flake8
-  - pip install faker
 install:
-  - pip install -r slack_driver/requirements.txt
-  - pip install -r slack_driver/tests/requirements.txt
+  - pip install -r requirements.txt
+  - pip install -r tests_requirements.txt
 script:
-  - cd slack_driver && make tests
+  - make tests

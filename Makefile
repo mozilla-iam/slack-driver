@@ -5,6 +5,10 @@ all:
 	@echo 'Available make targets:'
 	@grep '^[^#[:space:]].*:' Makefile
 
+
+install:
+	pip install slack-driver
+
 install-sls:
 	npm install
 
@@ -27,14 +31,17 @@ python-venv:
 	echo "# Run this in your shell to activate:"
 	echo "source venv/bin/activate"
 
+test: tests
 tests:
-	flake8 *.py
-	flake8 tests
-	python -m unittest discover tests
+	flake8 setup.py
+	flake8 slack_driver/*.py
+	flake8 slack_driver/tests
+	python setup.py test
 
 clean:
 	rm -rf node_modules
 	rm -rf venv
 	rm -rf __pycache__
+	rm -rf *.egg-info
 
-.PHONY: tests all
+.PHONY: test tests clean all

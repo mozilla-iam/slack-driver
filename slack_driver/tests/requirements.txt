@@ -1,8 +1,0 @@
-credstash
-flake8
-everett
-prompt_toolkit
-watchtower
-pyaml
-requests
-boto3
