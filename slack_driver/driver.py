@@ -182,5 +182,5 @@ def handle(event=None, context={}):
     logger.debug('Found {} Slack users which are allowed'.format(len(allowed_users)))
 
     logger.debug('Disable Slack users.')
-    if not verify_slack_users(config, allowed_users):
+    if not verify_slack_users(allowed_users):
         logger.warning('Failed to verify slack users - some users may not have been deprovisioned')

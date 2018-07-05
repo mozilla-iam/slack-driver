@@ -1,45 +1,45 @@
 REGION		:= us-west-2
 SLS_DEBUG	:= *
-PROGNAME	:= slack-driver
-PROGDIR		:= slack_driver
+PROG_NAME	:= slack-driver
+DIR_NAME	:= slack_driver
+STAGE		:= dev
+SLS_ENV		:= SLS_DEBUG=$(SLS_DEBUG) STAGE=$(STAGE)
+SLS_BIN		:= cd $(DIR_NAME) && $(SLS_ENV) ../node_modules/.bin/sls --region $(REGION)
 
 all:
 	@echo 'Available make targets:'
 	@grep '^[^#[:space:]].*:' Makefile
 
-
 install:
-	@echo Note that installing $(PROGNAME) does not deploy it, it just packages a local copy
-	pip install $(PROGNAME)
+	@echo Note that installing $(PROG_NAME) does not deploy it, it just packages a local copy
+	pip install $(PROG_NAME)
 
-install-sls: .sls-installed
-	touch .sls-installed
+.install-sls:
 	npm install
+	touch .install-sls
 
-deploy-prod: install-sls
-	SLS_DEBUG=$(SLS_DEBUG) STAGE=prod ./node_modules/.bin/sls deploy --region $(REGION) --stage prod
+deploy: .install-sls
+	@echo Deploying environment $(STAGE)
+	$(SLS_BIN) deploy --stage $(STAGE)
 
-remove-deploy-prod: install-sls
-	echo "Warning: removing deployement"
-	SLS_DEBUG=$(SLS_DEBUG) STAGE=prod ./node_modules/.bin/sls remove --region $(REGION) --stage prod
+remove-deploy: .install-sls
+	echo "Warning: removing deployement $(STAGE)"
+	$(SLS_BIN) remove --stage $(STAGE)
 
-deploy-dev: install-sls
-	SLS_DEBUG=$(SLS_DEBUG) STAGE=dev ./node_modules/.bin/sls deploy --region $(REGION) --stage dev
-
-remove-deploy-dev: install-sls
-	echo "Warning: removing deployement"
-	SLS_DEBUG=$(SLS_DEBUG) STAGE=dev ./node_modules/.bin/sls remove --region $(REGION) --stage dev
-
-python-venv:
+python-venv: venv
+venv:
 	$(shell [ -d venv ] || python3 -m venv venv)
 	echo "# Run this in your shell to activate:"
 	echo "source venv/bin/activate"
 
+logs:
+	$(SLS_BIN) logs --stage $(STAGE) -f $(PROG_NAME)
+
 test: tests
 tests:
 	flake8 setup.py
-	flake8 $(PROGDIR)/*.py
-	flake8 $(PROGDIR)/tests
+	flake8 $(DIR_NAME)/*.py
+	flake8 $(DIR_NAME)/tests
 	python setup.py test
 
 clean:
@@ -47,5 +47,6 @@ clean:
 	rm -rf venv
 	rm -rf __pycache__
 	rm -rf *.egg-info
+	rm -f .install-sls
 
-.PHONY: test tests clean all
+.PHONY: test tests clean all install

@@ -26,7 +26,7 @@ def get_requirements(path='requirements.txt'):
     """
     Reads a standard `requirements.txt` style file (output of `pip freeze`)
     """
-    with open('requirements.txt') as fd:
+    with open(path) as fd:
         requirements = fd.read()
     return requirements
 
@@ -36,6 +36,6 @@ setup(name="slack-driver",
       description="A Slack deprovisioning driver for Mozilla IAM",
       license="MPL",
       url="https://github.com/mozilla-iam/slack-driver",
-      install_requires=get_requirements(),
-      tests_require=get_requirements('tests_requirements.txt')
+      install_requires=get_requirements('slack_driver/requirements.txt'),
+      tests_require=get_requirements('slack_driver/tests_requirements.txt')
       )

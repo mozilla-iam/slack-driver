@@ -24,20 +24,7 @@ provider:
         - "dynamodb:ListTagsOfResource"
         - "dynamodb:Query"
         - "dynamodb:Scan"
-      Resource: arn:aws:dynamodb:*:*:table/cis-stream-prod-and-idv-IdentityVaultUsers-LMGGZ2XE8K6F
-    - Effect: "Allow"
-      Action:
-        - "dynamodb:DescribeTable"
-        - "dynamodb:DescribeStream"
-        - "dynamodb:GetItem"
-        - "dynamodb:GetRecords"
-        - "dynamodb:GetShardIterator"
-        - "dynamodb:ListStreams"
-        - "dynamodb:ListTables"
-        - "dynamodb:ListTagsOfResource"
-        - "dynamodb:Query"
-        - "dynamodb:Scan"
-      Resource: arn:aws:dynamodb:*:*:table/CISStaging-VaultandStreams-IdentityVaultUsers-O35P6M8U9LNW
+      Resource: arn:aws:dynamodb:*:*:table/${file(${self:custom.stage}-vars.yml):CIS_DYNAMODB_PERSON_TABLE}
     - Effect: "Allow"
       Action:
         - "dynamodb:DescribeTable"
@@ -50,6 +37,7 @@ provider:
         - "dynamodb:Query"
         - "dynamodb:Scan"
       Resource: arn:aws:dynamodb:*:*:table/credential-store
+# To be used to store deactivated users, so that they can be deleted later on automatically, after a grace period
     - Effect: "Allow"
       Action:
         - "dynamodb:DescribeTable"
