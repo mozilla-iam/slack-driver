@@ -46,10 +46,10 @@ Note that you may restrict which IP ranges can call the API with this token in S
 1. `cd slack_driver`
 2. `make` for a list of targets, ex:
 
-- `make install-sls` if you don't have the serverless framework installed
 - `make python-venv` if you don't have your own virtual environment scripts
 
 - `make tests` runs all tests
-- `make deploy-dev` deploys the code in the dev environment
-- `make remove-deploy-dev` deletes the dev deployment
-- `make deploy-prod` deploys the code in the prod environment
+- `make deploy` deploys the code in the dev environment
+- `make remove-deploy` deletes the dev deployment
+- `make STAGE=prod deploy` deploys the code in the prod environment
+- `make logs` just watch cloudwatch logs
