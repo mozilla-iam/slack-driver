@@ -13,6 +13,11 @@ This driver was created for the Mozilla IAM Project to satisfy an OKR around Sla
 6. Disable any user without access to Slack through a Slack API call.
 7. Enable any previously-disabled user that is still present in Slack database.
 
+
+NOTE: If you have Slack owners (not admins), these cannot be deactivated. It is recommended to create service-accounts
+for Slack owners, instead of using a normal / every-day user account. This is safer and cleaner, and you also will not
+run into this issue that way since the owner accounts being service-accounts, will not need to be deactivated.
+
 ## Process Diagram
 !['docs/img/Slack-Integration.png'](docs/img/Slack-Integration.png)
 
