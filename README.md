@@ -1,5 +1,7 @@
 # Slack Driver
 
+NOTE: This repository is discontinued. See https://github.com/mozilla-iam/cis for the CIS APIv2 Slack driver.
+
 ## About
 This driver was created for the Mozilla IAM Project to satisfy an OKR around Slack user session expiration.
 
